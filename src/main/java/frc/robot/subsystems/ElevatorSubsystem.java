@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 // import edu.wpi.first.wpilibj.DigitalInput;
 // import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +19,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new ElevatorSubsystem. */
   private final CANSparkMax elevator = new CANSparkMax(ElevatorConstants.ELEVATOR_RIGHT, MotorType.kBrushless);
   private final RelativeEncoder encoderElevator = elevator.getEncoder();
+  private final PIDController elevatorController = new PIDController(ElevatorConstants.TURN_KP, ElevatorConstants.TURN_KI,
+  ElevatorConstants.TURN_KD);
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(ElevatorConstants.KS, ElevatorConstants.KG, ElevatorConstants.KV, ElevatorConstants.KA);
 
   public double getEncoderElevatorPosition() {
     return (encoderElevator.getPosition());
@@ -26,6 +31,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     return encoderElevator.getPosition() >= ElevatorConstants.ELEVATOR_ENCODER_MAX;
   }
 
+  public double getElevatorControllerSpeed(double setpoint) { // takes the desired setpoint as a parameter
+    return (feedforward.calculate(ElevatorConstants.DESIRED_VELOCITY) + elevatorController.calculate(getEncoderElevatorPosition(), setpoint)); // returns the elevator speed calculated by the PID
+  }
+
   public ElevatorSubsystem() {
     elevator.setInverted(true);
   }
@@ -33,6 +42,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elevator Right Encoder", getEncoderElevatorPosition());
+    SmartDashboard.putNumber("Elevator Controller Speed", getElevatorControllerSpeed(ElevatorConstants.ELEVATOR_PID_POSITION)); // displays currently calculated elevator speed
+    SmartDashboard.putNumber("Elevator PID", elevatorController.calculate(getEncoderElevatorPosition(), ElevatorConstants.ELEVATOR_PID_POSITION));
+    SmartDashboard.putNumber("Feedforward", feedforward.calculate(ElevatorConstants.DESIRED_VELOCITY));
     // This method will be called once per scheduler run
   }
 
@@ -40,4 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevator.set(speed);
   }
 
+  public void setVoltage(double speed) {
+    elevator.setVoltage(speed);
+  }
 }

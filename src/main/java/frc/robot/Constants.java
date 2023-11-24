@@ -59,6 +59,16 @@ public final class Constants {
     public static final double ELEVATOR_DOWN_SPEED = 0.1;
     public static final double ELEVATOR_STALL_SPEED = -0.03;
     public static final double ELEVATOR_ENCODER_MAX = 0; // Encoder Value When Elevator is at Top
+    public static final double TURN_KP = 0.09;
+    public static final double TURN_KI = 0.0;
+    public static final double TURN_KD = 0.0;
+    public static final int ELEVATOR_PID_BUTTON = 11;
+    public static final double ELEVATOR_PID_POSITION = -11.73;
+    public static final double KS = 0.12307;
+    public static final double KG = -0.63366;
+    public static final double KV = 0.10275;
+    public static final double KA = 0.023827;
+    public static final double DESIRED_VELOCITY = 0;
   }
 
   public static class IntakeConstants {
